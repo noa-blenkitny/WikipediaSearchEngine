@@ -5,6 +5,16 @@ import search_backend
 #import inverted_index_colab
 class MyFlaskApp(Flask):
     def run(self, host=None, port=None, debug=None, **options):
+        
+        self.title = InvertedIndex.read_index('.',"title_index")
+        self.body_index = InvertedIndex.read_index('.',"body_index")
+        self.anchor_index = InvertedIndex.read_index('.',"anchor_index")
+        with open('pr.pkl', 'rb') as f: #{docid:page_rank}
+          self.page_ranks_dict = pickle.loads(f.read())
+        with open('pv.pkl', 'rb') as f: #{docid:page_views}
+          self.page_views_dict = pickle.loads(f.read())
+        with open('titles.pkl', 'rb') as f: #{docid:title}
+          self.page_titles_dict = pickle.loads(f.read())
         super(MyFlaskApp, self).run(host=host, port=port, debug=debug, **options)
 
 app = MyFlaskApp(__name__)
@@ -34,7 +44,7 @@ def search():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-
+ 
     # END SOLUTION
     return jsonify(res)
 
@@ -59,8 +69,8 @@ def search_body():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    scores = search_backend.backend_search_body(query,body_index)
-    if (len(scores < 100)):
+    scores = search_backend.backend_search_body(query,app.body_index)
+    if (len(scores) < 100):
       res = calc_title(scores)
     else:
       res = calc_title(scores[:100])
@@ -86,11 +96,15 @@ def search_title():
     '''
     res = []
     query = request.args.get('query', '')
+    print(query)
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    scores = search_backend.backend_search_title_anchor(query,title_index)
+
+    scores = search_backend.backend_search_title_anchor(query,app.title)
+    print("after scores")
     res = calc_title(scores)
+    print(res)
     # END SOLUTION
     return jsonify(res)
 
@@ -117,7 +131,7 @@ def search_anchor():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    scores = search_backend.backend_search_title_anchor(query,anchor_index)
+    scores = search_backend.backend_search_title_anchor(query,app.anchor_index)
     res = calc_title(scores)
     # END SOLUTION
     return jsonify(res)
@@ -143,7 +157,7 @@ def get_pagerank():
     if len(wiki_ids) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    res = search_backend.backend_get_page_rank(page_ranks_dict,wiki_ids)
+    res = search_backend.backend_get_page_rank(app.page_ranks_dict,wiki_ids)
     # END SOLUTION
     return jsonify(res)
 
@@ -170,7 +184,7 @@ def get_pageview():
     if len(wiki_ids) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
-    res = search_backend.backend_get_page_views(page_views_dict,wiki_ids)
+    res = search_backend.backend_get_page_views(app.page_views_dict,wiki_ids)
     # END SOLUTION
     return jsonify(res)
 
@@ -178,21 +192,24 @@ def get_pageview():
 def calc_title(list_of_scores):
     res=[]
     for doc_id,score in list_of_scores:
-      res.append((doc_id,page_titles_dict[doc_id]))
+      res.append((doc_id,app.page_titles_dict[doc_id]))
     return res
       
 
 if __name__ == '__main__':
+    import requests
+    r = requests.post('http://e44b-35-185-247-102.ngrok.io/get_pagerank', json=[23862,23329])
+    print(r.json())
     # run the Flask RESTful API, make the server publicly available (host='0.0.0.0') on port 8080
-    title_index = InvertedIndex.read_index('.',"title_index")
-    body_index = InvertedIndex.read_index('.',"body_index")
-    anchor_index = InvertedIndex.read_index('.',"anchor_index")
-    with open('pr.pkl', 'rb') as f: #{docid:page_rank}
-      page_ranks_dict = pickle.loads(f.read())
-    with open('pv.pkl', 'rb') as f: #{docid:page_views}
-      page_views_dict = pickle.loads(f.read())
-    with open('titles.pkl', 'rb') as f: #{docid:title}
-      page_titles_dict = pickle.loads(f.read())
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    # title = InvertedIndex.read_index('.',"title_index")
+    # body_index = InvertedIndex.read_index('.',"body_index")
+    # anchor_index = InvertedIndex.read_index('.',"anchor_index")
+    # with open('pr.pkl', 'rb') as f: #{docid:page_rank}
+    #   page_ranks_dict = pickle.loads(f.read())
+    # with open('pv.pkl', 'rb') as f: #{docid:page_views}
+    #   page_views_dict = pickle.loads(f.read())
+    # with open('titles.pkl', 'rb') as f: #{docid:title}
+    #   page_titles_dict = pickle.loads(f.read())
+    #app.run(host='0.0.0.0', port=8080, debug=True)
     
     
