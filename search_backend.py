@@ -6,9 +6,9 @@ import re
 from collections import OrderedDict, Counter, defaultdict
 import hashlib
 from heapq import heappop, heappush, heapify
-from inverted_index_colab import MultiFileReader
-from inverted_index_colab import MultiFileWriter
-from inverted_index_colab import InvertedIndex
+from inverted_index_gcp import MultiFileReader
+from inverted_index_gcp import MultiFileWriter
+from inverted_index_gcp import InvertedIndex
 import nltk
 from nltk.stem.porter import *
 from nltk.corpus import stopwords
