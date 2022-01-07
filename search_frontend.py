@@ -1,6 +1,6 @@
 import pickle
 from flask import Flask, request, jsonify
-from inverted_index_colab import InvertedIndex
+from inverted_index_gcp import InvertedIndex
 import search_backend
 #import inverted_index_colab
 class MyFlaskApp(Flask):
@@ -13,7 +13,7 @@ class MyFlaskApp(Flask):
           self.page_ranks_dict = pickle.loads(f.read())
         with open('pv.pkl', 'rb') as f: #{docid:page_views}
           self.page_views_dict = pickle.loads(f.read())
-        with open('titles.pkl', 'rb') as f: #{docid:title}
+        with open('titles_dict.pkl', 'rb') as f: #{docid:title}
           self.page_titles_dict = pickle.loads(f.read())
         super(MyFlaskApp, self).run(host=host, port=port, debug=debug, **options)
 
@@ -29,7 +29,6 @@ def search():
         project requirements (efficiency, quality, etc.). That means it is up to
         you to decide on whether to use stemming, remove stopwords, use 
         PageRank, query expansion, etc.
-
         To issue a query navigate to a URL like:
          http://YOUR_SERVER_DOMAIN/search?query=hello+world
         where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
@@ -54,7 +53,6 @@ def search_body():
         SIMILARITY OF THE BODY OF ARTICLES ONLY. DO NOT use stemming. DO USE the 
         staff-provided tokenizer from Assignment 3 (GCP part) to do the 
         tokenization and remove stopwords. 
-
         To issue a query navigate to a URL like:
          http://YOUR_SERVER_DOMAIN/search_body?query=hello+world
         where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
@@ -84,7 +82,6 @@ def search_title():
         QUERY WORDS that appear in the title. For example, a document with a 
         title that matches two of the query words will be ranked before a 
         document with a title that matches only one query term. 
-
         Test this by navigating to the a URL like:
          http://YOUR_SERVER_DOMAIN/search_title?query=hello+world
         where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
@@ -116,7 +113,6 @@ def search_anchor():
         For example, a document with a anchor text that matches two of the 
         query words will be ranked before a document with anchor text that 
         matches only one query term. 
-
         Test this by navigating to the a URL like:
          http://YOUR_SERVER_DOMAIN/search_anchor?query=hello+world
         where YOUR_SERVER_DOMAIN is something like XXXX-XX-XX-XX-XX.ngrok.io
@@ -139,7 +135,6 @@ def search_anchor():
 @app.route("/get_pagerank", methods=['POST'])
 def get_pagerank():
     ''' Returns PageRank values for a list of provided wiki article IDs. 
-
         Test this by issuing a POST request to a URL like:
           http://YOUR_SERVER_DOMAIN/get_pagerank
         with a json payload of the list of article ids. In python do:
@@ -165,7 +160,6 @@ def get_pagerank():
 def get_pageview():
     ''' Returns the number of page views that each of the provide wiki articles
         had in August 2021.
-
         Test this by issuing a POST request to a URL like:
           http://YOUR_SERVER_DOMAIN/get_pageview
         with a json payload of the list of article ids. In python do:
@@ -197,9 +191,9 @@ def calc_title(list_of_scores):
       
 
 if __name__ == '__main__':
-    import requests
-    r = requests.post('http://e44b-35-185-247-102.ngrok.io/get_pagerank', json=[23862,23329])
-    print(r.json())
+    #import requests
+    #r = requests.post('http://e44b-35-185-247-102.ngrok.io/get_pagerank', json=[23862,23329])
+    #print(r.json())
     # run the Flask RESTful API, make the server publicly available (host='0.0.0.0') on port 8080
     # title = InvertedIndex.read_index('.',"title_index")
     # body_index = InvertedIndex.read_index('.',"body_index")
@@ -210,6 +204,5 @@ if __name__ == '__main__':
     #   page_views_dict = pickle.loads(f.read())
     # with open('titles.pkl', 'rb') as f: #{docid:title}
     #   page_titles_dict = pickle.loads(f.read())
-    #app.run(host='0.0.0.0', port=8080, debug=True)
-    
-    
+    # app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080)
