@@ -1,4 +1,4 @@
-import pyspark
+
 import sys
 from collections import Counter, OrderedDict
 import itertools
@@ -207,4 +207,3 @@ class InvertedIndex:
         blob_posting_locs = bucket.blob(f"postings_gcp/{bucket_id}_posting_locs.pickle")
         blob_posting_locs.upload_from_filename(f"{bucket_id}_posting_locs.pickle")
     
-
