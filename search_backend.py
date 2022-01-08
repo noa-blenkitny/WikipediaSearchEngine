@@ -190,12 +190,18 @@ def backend_search_title_anchor(query, index):
 def backend_get_page_rank(page_rank_dict, list_of_pages):
   res = []
   for page in list_of_pages:
-    res.append(page_rank_dict[page]) 
+    try:
+        res.append(page_rank_dict[page]) 
+    except KeyError:
+        res.append(0.0)
   return res
 
 def backend_get_page_views(page_views_dict, list_of_pages):
   res = []
   for page in list_of_pages:
-    res.append(page_views_dict[page]) 
+    try:
+        res.append(page_views_dict[page]) 
+    except KeyError:
+        res.append(0.0)
   return res
 
