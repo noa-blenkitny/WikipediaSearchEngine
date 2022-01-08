@@ -148,9 +148,11 @@ def backend_search_body(query, index):
   heapify(heap)
   for key, val in scores_dict.items():
       heappush(heap,(-1*val,key))
-  while(heap):
+  counter=0
+  while(heap and counter < 100):
     score,doc_id = heappop(heap)
     res.append((doc_id,score*-1))
+    counter+=1
     
   #before we changed to heap- used sort on dict
   #scores_dict = sorted(scores_dict.items(), key = lambda item : item[1] , reverse=True)

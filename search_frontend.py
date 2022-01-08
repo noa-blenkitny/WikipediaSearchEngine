@@ -68,10 +68,7 @@ def search_body():
       return jsonify(res)
     # BEGIN SOLUTION
     scores = search_backend.backend_search_body(query,app.body_index)
-    if (len(scores) < 100):
-      res = calc_title(scores)
-    else:
-      res = calc_title(scores[:100])
+    res = calc_title(scores)
     # END SOLUTION
     return jsonify(res)
 
