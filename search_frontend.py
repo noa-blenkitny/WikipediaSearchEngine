@@ -9,6 +9,9 @@ class MyFlaskApp(Flask):
         self.title = InvertedIndex.read_index('.',"title_index")
         self.body_index = InvertedIndex.read_index('.',"body_index")
         self.anchor_index = InvertedIndex.read_index('.',"anchor_index")
+        self.bm25_T = InvertedIndex.read_index('.',"bm25_T")
+        self.bm25_B = InvertedIndex.read_index('.',"bm25_B")
+        self.bm25_A = InvertedIndex.read_index('.',"bm25_A")
         with open('pr.pkl', 'rb') as f: #{docid:page_rank}
           self.page_ranks_dict = pickle.loads(f.read())
         with open('pv.pkl', 'rb') as f: #{docid:page_views}
@@ -43,7 +46,8 @@ def search():
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
- 
+    scores = search_backend.backend_search(query,app.bm25_B,app.bm25_T, 0.8, 0.2)
+    res = calc_title(scores)
     # END SOLUTION
     return jsonify(res)
 
@@ -90,15 +94,12 @@ def search_title():
     '''
     res = []
     query = request.args.get('query', '')
-    print(query)
     if len(query) == 0:
       return jsonify(res)
     # BEGIN SOLUTION
 
     scores = search_backend.backend_search_title_anchor(query,app.title)
-    print("after scores")
     res = calc_title(scores)
-    print(res)
     # END SOLUTION
     return jsonify(res)
 
@@ -188,18 +189,6 @@ def calc_title(list_of_scores):
       
 
 if __name__ == '__main__':
-    #import requests
-    #r = requests.post('http://e44b-35-185-247-102.ngrok.io/get_pagerank', json=[23862,23329])
-    #print(r.json())
     # run the Flask RESTful API, make the server publicly available (host='0.0.0.0') on port 8080
-    # title = InvertedIndex.read_index('.',"title_index")
-    # body_index = InvertedIndex.read_index('.',"body_index")
-    # anchor_index = InvertedIndex.read_index('.',"anchor_index")
-    # with open('pr.pkl', 'rb') as f: #{docid:page_rank}
-    #   page_ranks_dict = pickle.loads(f.read())
-    # with open('pv.pkl', 'rb') as f: #{docid:page_views}
-    #   page_views_dict = pickle.loads(f.read())
-    # with open('titles.pkl', 'rb') as f: #{docid:title}
-    #   page_titles_dict = pickle.loads(f.read())
     # app.run(host='0.0.0.0', port=8080, debug=True)
     app.run(host='0.0.0.0', port=8080)
