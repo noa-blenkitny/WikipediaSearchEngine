@@ -214,7 +214,7 @@ def backend_get_page_views(page_views_dict, list_of_pages):
     try:
         res.append(page_views_dict[page]) 
     except KeyError:
-        res.append(0.0)
+        res.append(0)
   return res
 
 def calc_idf_query(query, index):
